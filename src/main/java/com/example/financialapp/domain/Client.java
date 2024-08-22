@@ -2,7 +2,10 @@ package com.example.financialapp.domain;
 
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -37,6 +40,10 @@ public class Client {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Getter
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -47,4 +54,5 @@ public class Client {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
 }
