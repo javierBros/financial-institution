@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-    Product createProduct(Product product);
+    Product createProduct(Product product, Long clientId);
     Product updateProduct(Long id, Product productDetails);
     void deleteProduct(Long id);
     List<Product> getAllProducts();

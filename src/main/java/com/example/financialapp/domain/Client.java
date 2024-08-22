@@ -1,9 +1,13 @@
 package com.example.financialapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,16 +27,19 @@ public class Client {
     private String identificationNumber;
 
     @Column(name = "first_name", nullable = false)
+    @Size(min = 2, message = "First name must have at least 2 characters")
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
+    @Size(min = 2, message = "Last name must have at least 2 characters")
     private String lastName;
 
     @Column(name = "email", nullable = false, unique = true)
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(name = "birthdate", nullable = false)
-    private LocalDateTime birthdate;
+    private LocalDate birthdate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -42,6 +49,7 @@ public class Client {
 
     @Getter
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Product> products;
 
     @PrePersist

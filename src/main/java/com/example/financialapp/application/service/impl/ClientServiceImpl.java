@@ -9,6 +9,7 @@ import com.example.financialapp.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client createClient(Client client) {
-        if (client.getBirthdate().plusYears(18).isAfter(LocalDateTime.now())) {
+        if (client.getBirthdate().plusYears(18).isAfter(LocalDate.now())) {
             throw new InvalidRequestException(Constants.CLIENT_UNDERAGE);
         }
         return clientRepository.save(client);

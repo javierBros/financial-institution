@@ -1,13 +1,15 @@
 package com.example.financialapp.domain;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "products")
+@Table(name = "products", uniqueConstraints = @UniqueConstraint(columnNames = "account_number"))
 public class Product {
 
     @Id
@@ -39,16 +41,28 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
+    @JsonBackReference
     private Client client;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+
+        generateAccountNumber();
+        if (this.accountType == AccountType.SAVINGS && this.status == null) {
+            this.status = AccountStatus.ACTIVE;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    private void generateAccountNumber() {
+        String prefix = this.accountType == AccountType.SAVINGS ? "53" : "33";
+        String uniqueNumber = String.format("%08d", this.id);
+        this.accountNumber = prefix + uniqueNumber;
     }
 }
