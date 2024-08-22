@@ -1,4 +1,4 @@
-package com.example.financialapp.infrastructure.repository;
+package com.example.financialapp.adapters.outbound;
 
 import com.example.financialapp.domain.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;

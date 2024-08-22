@@ -4,7 +4,7 @@ import com.example.financialapp.application.service.ProductService;
 import com.example.financialapp.domain.Product;
 import com.example.financialapp.infrastructure.exception.InvalidRequestException;
 import com.example.financialapp.infrastructure.exception.ResourceNotFoundException;
-import com.example.financialapp.infrastructure.repository.ProductRepository;
+import com.example.financialapp.adapters.outbound.ProductRepository;
 import com.example.financialapp.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
