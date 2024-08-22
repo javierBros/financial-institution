@@ -10,4 +10,5 @@ public interface TransactionService {
     List<Transaction> getTransactionsBySourceAccountId(Long sourceAccountId);
     List<Transaction> getTransactionsByDestinationAccountId(Long destinationAccountId);
     Optional<Transaction> getTransactionById(Long id);
+    List<Transaction> findAll();
 }

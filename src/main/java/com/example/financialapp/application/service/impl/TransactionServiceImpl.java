@@ -72,4 +72,9 @@ public class TransactionServiceImpl implements TransactionService {
     public Optional<Transaction> getTransactionById(Long id) {
         return transactionRepository.findById(id);
     }
+
+    @Override
+    public List<Transaction> findAll() {
+        return transactionRepository.findAll();
+    }
 }
