@@ -5,9 +5,12 @@ import com.example.financialapp.domain.Product;
 import com.example.financialapp.infrastructure.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,6 +18,8 @@ import java.util.List;
 @RequestMapping("/api/products")
 @Validated
 public class ProductController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
 
@@ -25,32 +30,61 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
+        logger.info("Fetching all products");
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        logger.info("Fetching product with id: {}", id);
         Product product = productService.getProductById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
+                .orElseThrow(() -> {
+                    logger.error("Product not found with id: {}", id);
+                    return new ResourceNotFoundException("Product not found with id " + id);
+                });
+        logger.info("Product fetched successfully with id: {}", id);
         return ResponseEntity.ok(product);
     }
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product, @RequestParam Long clientId) {
-        Product createdProduct = productService.createProduct(product, clientId);
-        return ResponseEntity.ok(createdProduct);
+        logger.info("Creating new product for clientId: {}", clientId);
+        try {
+            Product createdProduct = productService.createProduct(product, clientId);
+            logger.info("Product created successfully with id: {}", createdProduct.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+        } catch (Exception e) {
+            logger.error("Error creating product: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product productDetails) {
-        Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
+        logger.info("Updating product with id: {}", id);
+        try {
+            Product updatedProduct = productService.updateProduct(id, productDetails);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Error updating product: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        logger.info("Deleting product with id: {}", id);
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Error deleting product: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
