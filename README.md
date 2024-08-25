@@ -15,6 +15,10 @@
 - **MySQL** database
 - **Gradle** build tool
 
+## Postman project
+
+The Postman project with all endpoints has been attached in src/main/resources/Financial_distribution.postman_collection.json
+
 ## Required Environment Variables for Database Configuration
 
 To properly configure the database for this project, you need to set the following environment variables:
@@ -30,6 +34,13 @@ To properly configure the database for this project, you need to set the followi
 
 - **`DB_DRIVER`**: The driver class name for MySQL.
     - Example: `com.mysql.cj.jdbc.Driver`
+
+### Environment Variables for OAuth2 Client
+
+The application requires the following environment variables for OAuth2 authentication:
+
+- `CLIENT_ID`: The client ID for OAuth2 authentication. Default is `default-client-id`.
+- `CLIENT_SECRET`: The client secret for OAuth2 authentication. Default is `default-secret`.
 
 ## API Endpoints
 
@@ -56,6 +67,53 @@ To properly configure the database for this project, you need to set the followi
 - **POST /api/transactions**: Create a new transaction
 - **GET /api/transactions/source/{sourceAccountId}**: Retrieve transactions by source account ID
 - **GET /api/transactions/destination/{destinationAccountId}**: Retrieve transactions by destination account ID
+
+## API Authentication
+
+The API uses OAuth2 JWT tokens for authentication. Before accessing any protected endpoint, you must first obtain an access token.
+
+### Obtaining an Access Token
+
+To obtain an access token, send a POST request to the /oauth2/token endpoint.
+
+#### Endpoint
+POST http://localhost:8080/oauth2/token
+#### Request Headers:
+- Content-Type: `application/x-www-form-urlencoded`
+- Authorization: `Basic {Base64 encoded client_id:client_secret}`
+
+#### Request Body:
+grant_type=client_credentials&scope=read write
+
+#### Example request using cURL 
+
+```
+curl --location 'http://localhost:8080/oauth2/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'Authorization: Basic ZGVmYXVsdC1jbGllbnQtaWQ6ZGVmYXVsdC1zZWNyZXQ=' \
+--data-urlencode 'grant_type=client_credentials' \
+--data-urlencode 'scope=read write'
+```
+
+#### Response example
+```
+{
+  "access_token": "eyJraWQiOiIxNmM3YTI5ZC1jNTU3LTRkZTUtYjZkNy1mZTI1ZDc2M2U2NTYiLCJhbGciOiJSUzI1NiJ9...",
+  "scope": "read write",
+  "token_type": "Bearer",
+  "expires_in": 299
+}
+```
+
+### Consuming Protected Endpoints
+
+Once you have obtained the access token, you can access the protected API endpoints by including the token in the Authorization header.
+
+#### Example
+```
+curl --location 'http://localhost:8080/api/clients' \
+--header 'Authorization: Bearer eyJraWQiOiIxNjAzNTYzZi1iYWJkLTQ1MDU...'
+```
 
 ## Script
 
