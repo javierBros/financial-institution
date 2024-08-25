@@ -53,13 +53,8 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction transaction) {
         logger.info("Creating new transaction");
-        try {
-            Transaction createdTransaction = transactionService.createTransaction(transaction);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
-        } catch (Exception e) {
-            logger.error("Error creating transaction: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
     }
 
     @GetMapping("/source/{sourceAccountId}")

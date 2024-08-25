@@ -50,41 +50,22 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product, @RequestParam Long clientId) {
         logger.info("Creating new product for clientId: {}", clientId);
-        try {
-            Product createdProduct = productService.createProduct(product, clientId);
-            logger.info("Product created successfully with id: {}", createdProduct.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
-        } catch (Exception e) {
-            logger.error("Error creating product: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Product createdProduct = productService.createProduct(product, clientId);
+        logger.info("Product created successfully with id: {}", createdProduct.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product productDetails) {
         logger.info("Updating product with id: {}", id);
-        try {
-            Product updatedProduct = productService.updateProduct(id, productDetails);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            logger.error("Error updating product: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Product updatedProduct = productService.updateProduct(id, productDetails);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         logger.info("Deleting product with id: {}", id);
-        try {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            logger.error("Error deleting product: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
