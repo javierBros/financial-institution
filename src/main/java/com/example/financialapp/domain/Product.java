@@ -2,7 +2,6 @@ package com.example.financialapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
