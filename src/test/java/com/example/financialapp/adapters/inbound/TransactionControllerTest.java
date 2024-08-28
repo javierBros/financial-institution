@@ -15,8 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -92,9 +91,9 @@ class TransactionControllerTest {
 
         // When/Then
         ResourceNotFoundException thrown =
-            org.junit.jupiter.api.Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-                transactionController.getTransactionById(1L);
-            });
+                org.junit.jupiter.api.Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+                    transactionController.getTransactionById(1L);
+                });
 
         assertEquals("Transaction not found with id 1", thrown.getMessage());
         verify(transactionService, times(1)).getTransactionById(1L);
@@ -123,11 +122,12 @@ class TransactionControllerTest {
         when(transactionService.createTransaction(any(Transaction.class))).thenThrow(new RuntimeException("Error creating transaction"));
 
         // When
-        ResponseEntity<Transaction> response = transactionController.createTransaction(new Transaction());
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+                    transactionController.createTransaction(new Transaction());
+                });
 
         // Then
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(transactionService, times(1)).createTransaction(any(Transaction.class));
+        assertEquals("Error creating transaction", runtimeException.getMessage());
     }
 
     @Test

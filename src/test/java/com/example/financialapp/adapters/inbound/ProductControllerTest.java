@@ -2,6 +2,7 @@ package com.example.financialapp.adapters.inbound;
 
 import com.example.financialapp.application.service.ProductService;
 import com.example.financialapp.domain.Product;
+import com.example.financialapp.domain.Transaction;
 import com.example.financialapp.infrastructure.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -77,12 +77,13 @@ class ProductControllerTest {
         // Given
         when(productService.getProductById(anyLong())).thenReturn(Optional.empty());
 
-        // When/Then
-        ResourceNotFoundException thrown = 
+        // When
+        Exception thrown =
             org.junit.jupiter.api.Assertions.assertThrows(ResourceNotFoundException.class, () -> {
                 productController.getProductById(1L);
             });
 
+        // Then
         assertEquals("Product not found with id 1", thrown.getMessage());
         verify(productService, times(1)).getProductById(1L);
     }
@@ -127,10 +128,12 @@ class ProductControllerTest {
         when(productService.updateProduct(anyLong(), any(Product.class))).thenThrow(new ResourceNotFoundException("Product not found"));
 
         // When
-        ResponseEntity<Product> response = productController.updateProduct(1L, new Product());
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productController.updateProduct(1L, new Product());
+        });
 
         // Then
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product not found", exception.getMessage());
         verify(productService, times(1)).updateProduct(anyLong(), any(Product.class));
     }
 
@@ -150,10 +153,12 @@ class ProductControllerTest {
         doThrow(new ResourceNotFoundException("Product not found")).when(productService).deleteProduct(anyLong());
 
         // When
-        ResponseEntity<Void> response = productController.deleteProduct(1L);
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+           productController.deleteProduct(1L);
+        });
 
         // Then
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product not found", exception.getMessage());
         verify(productService, times(1)).deleteProduct(1L);
     }
 }
